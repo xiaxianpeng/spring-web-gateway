@@ -10,9 +10,9 @@ import org.springframework.core.Ordered;
 public class WebMvcConfig {
 
     @Bean
-    public FilterRegistrationBean<RequestCachingFilter> requestCachingFilter() {
+    public FilterRegistrationBean<RequestCachingFilter> requestCachingFilterRegistration(RequestCachingFilter requestCachingFilter) {
         FilterRegistrationBean<RequestCachingFilter> filterRegBean = new FilterRegistrationBean<>();
-        filterRegBean.setFilter(new RequestCachingFilter());
+        filterRegBean.setFilter(requestCachingFilter);
         // 可以指定需要缓存请求的URL模式
         filterRegBean.addUrlPatterns("/*");
         // 设置过滤器优先级
