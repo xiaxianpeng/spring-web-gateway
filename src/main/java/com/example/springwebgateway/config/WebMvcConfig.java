@@ -19,4 +19,16 @@ public class WebMvcConfig {
         filterRegBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return filterRegBean;
     }
+
+
+    @Bean
+    public FilterRegistrationBean<SignVerifyFilter> signatureVerifyFilterRegistration(SignVerifyFilter signatureVerifyFilter) {
+        FilterRegistrationBean<SignVerifyFilter> filterRegBean = new FilterRegistrationBean<>();
+        filterRegBean.setFilter(signatureVerifyFilter);
+        // 可以指定需要缓存请求的URL模式
+        filterRegBean.addUrlPatterns("/*");
+        // 设置过滤器优先级
+        filterRegBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        return filterRegBean;
+    }
 }
