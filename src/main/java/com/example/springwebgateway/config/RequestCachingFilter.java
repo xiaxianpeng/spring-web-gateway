@@ -19,9 +19,10 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 public class RequestCachingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // 创建一个包装的请求对象，用于缓存请求体
+        ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
         boolean isValid;
         // 检查请求体的签名
-        ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
         isValid = this.verifySignature(requestWrapper);
         // 如果签名无效，返回错误响应
         if (!isValid) {
