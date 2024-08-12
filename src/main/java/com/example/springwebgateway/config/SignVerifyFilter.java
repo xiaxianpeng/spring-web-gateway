@@ -2,11 +2,13 @@ package com.example.springwebgateway.config;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.Resource;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.example.springwebgateway.service.VerifyService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
@@ -17,10 +19,22 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 
 @Component
 public class SignVerifyFilter extends OncePerRequestFilter {
+
+    @Resource
+    private VerifyService verifyService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (request instanceof ContentCachingRequestWrapper) {
             ContentCachingRequestWrapper cachingRequest = (ContentCachingRequestWrapper) request;
+
+            // 如果IP无效，返回错误响应
+            boolean ipVerify = verifyService.verifyIp(request.getRemoteAddr());
+            if (!ipVerify) {
+                writeResponse(response, "Invalid IP");
+                return;
+            }
+
             // 如果时间戳无效，返回错误响应
             if (!this.verifyTimestamp(request.getHeader("x-timestamp"))) {
                 writeResponse(response, "Invalid timestamp");
@@ -31,6 +45,7 @@ public class SignVerifyFilter extends OncePerRequestFilter {
                 writeResponse(response, "Invalid signature");
                 return;
             }
+
             // todo 多次请求
             // 继续处理请求
             filterChain.doFilter(cachingRequest, response);
